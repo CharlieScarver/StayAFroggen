@@ -55,7 +55,9 @@
 
             this.IsMovingRight = true;
         }
-        
+
+        #region Properties
+
         public Rectangle WalkingBox
         {
             get
@@ -72,11 +74,13 @@
                 this.walkingBox = value;
             }
         }
+
         public int WalkingBoxX
         {
             get { return this.walkingBox.X; }
             set { this.walkingBox.X = value; }
         }
+
         public int WalkingBoxY
         {
             get { return this.walkingBox.Y; }
@@ -84,17 +88,30 @@
         }
 
         private Rectangle FutureBox { get; set; }
+
         private Direction LastDirection { get; set; }
 
         // IDestroyable
-        public int Health { get; }
+        public int Health { get; private set; }
         
         // IAnimateable
         public int CurrentFrame { get; private set; }
+
         public int BasicAnimationFrameCount { get; }
+
         public double Timer { get; private set; }
+
         public int Delay { get; }
+
         public Rectangle SourceRect { get; private set; }
+        #endregion
+
+        #region Methods
+
+        public void GetHit(int damage)
+        {
+            this.Health -= damage;
+        }
 
         private void BasicAnimationLogic(GameTime gameTime, int delay, int basicAnimationFrameCount)
         {
@@ -278,17 +295,25 @@
 
         public override void Update(GameTime gameTime)
         {
-            this.FindPath();
-            this.ManageMovement();
-
-            if (this.Y > 720)
+            if (this.Health <= 0)
             {
-                this.X = 0;
-                this.Y = 80;
+                this.IsActive = false;
             }
 
-            this.UpdateBoundingBox();
-            this.ManageAnimation(gameTime);
+            if (this.IsActive)
+            {
+                this.FindPath();
+                this.ManageMovement();
+
+                if (this.Y > 720)
+                {
+                    this.X = 0;
+                    this.Y = 80;
+                }
+
+                this.UpdateBoundingBox();
+                this.ManageAnimation(gameTime);
+            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
@@ -298,8 +323,15 @@
                 new Rectangle((int)this.X, (int)this.Y, PrincessDestRectSize, PrincessDestRectSize), 
                 this.SourceRect, 
                 Color.White);
+
             //spriteBatch.Draw(TextureLoader.TheOnePixel, this.Position, 
             //    new Rectangle((int)this.X, (int)this.Y, PrincessDestRectSize, PrincessDestRectSize), Color.Blue);
+
+            spriteBatch.Draw(
+                TextureLoader.TheOnePixel, 
+                new Rectangle((int)this.X, (int)this.Y - 15, this.Health, 10),
+                Color.Green);
         }
+        #endregion
     }
 }

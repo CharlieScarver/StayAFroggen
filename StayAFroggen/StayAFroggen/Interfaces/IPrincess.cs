@@ -2,7 +2,7 @@
 {
     using Microsoft.Xna.Framework;
 
-    public interface IPrincess : IDestroyable, IAnimatable
+    public interface IPrincess : IUnit, IDestroyable, IAnimatable
     {
         Rectangle WalkingBox { get; }
 

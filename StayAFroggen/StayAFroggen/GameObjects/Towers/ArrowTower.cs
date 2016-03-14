@@ -4,7 +4,10 @@
     using Interfaces;
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
+    using Projectiles;
     using TextureLoading;
+    using Timer;
+    using Units;
 
     public class ArrowTower : Tower
     {
@@ -13,6 +16,7 @@
 
         private const int ArrowTowerDamage = 20;
         private const int ArrowTowerRange = 3;
+        private const float ArrowTowerAttackTimeInSeconds = 0.5f;
 
         private const int ArrowTowerDestRectWidth = 70; // 100 * 0.7
         private const int ArrowTowerDestRectHeight = 126; // 180 * 0.7
@@ -33,26 +37,47 @@
                 (int)this.Y + ArrowTowerDestRectHeight - 35 - (int)(this.Range * 80) / 2,
                 (int)(this.Range * 80),
                 (int)(this.Range * 80));
+
             this.Damage = ArrowTowerDamage;
+            this.AttackTimer = new Timer();
+            this.AttackTimeInSeconds = ArrowTowerAttackTimeInSeconds;
         }
 
         private bool PrincessInRange { get; set; }
+
         private Rectangle SightArea { get; }
+
+        public override void Attack(IPrincess unit)
+        {
+            IProjectile proj = new ArrowTowerProjectile(new Vector2(this.X + ArrowTowerDestRectWidth / 2, this.Y + 10), unit, this.Damage);
+            Engine.Projectiles.Add(proj);
+        }
 
         public override void Update(GameTime gameTime)
         {
-            PrincessInRange = false;
-            foreach (IUnit unit in Engine.Units)
+            if (this.AttackTimer.CheckIfReady(gameTime))
             {
-                if (!(unit is IPrincess))
+                PrincessInRange = false;
+                foreach (IUnit unit in Engine.Units)
                 {
-                    continue;
-                }
-                IPrincess princess = (IPrincess) unit;
-                if (this.SightArea.Intersects(princess.WalkingBox))
-                {
-                    PrincessInRange = true;
-                    break;
+                    if (!(unit is IPrincess))
+                    {
+                        continue;
+                    }
+
+                    if (!unit.IsActive)
+                    {
+                        continue;
+                    }
+
+                    IPrincess princess = (IPrincess)unit;
+                    if (this.SightArea.Intersects(princess.WalkingBox))
+                    {
+                        PrincessInRange = true;
+                        this.Attack(princess);
+                        this.AttackTimer.SetTimer(gameTime, this.AttackTimeInSeconds);
+                        break;
+                    }
                 }
             }
         }

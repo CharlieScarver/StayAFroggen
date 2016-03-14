@@ -9,5 +9,6 @@
         bool IsMovingRight { get; set; }
 
         bool IsMovingLeft { get; set; }
+        
     }
 }

@@ -145,7 +145,6 @@
         public void Nullify()
         {
             this.IsActive = false;
-            this.BoundingBox = new Rectangle();
         }
         
         public void DrawBb(SpriteBatch spriteBatch, Color boundingBoxColor)

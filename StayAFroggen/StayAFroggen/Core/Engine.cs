@@ -16,6 +16,7 @@
             Units = new List<IUnit>();
             Tiles = new List<ITile>();
             Towers = new List<ITower>();
+            Projectiles = new List<IProjectile>();
         }
 
         public static ICollection<IUnit> Units { get; }
@@ -24,6 +25,8 @@
 
         public static ICollection<ITower> Towers { get; }
 
+        public static ICollection<IProjectile> Projectiles { get; }
+
         public static void InitializeGameObjects()
         {
             //var tower = new ArrowTower(new Vector2(6 * 80, 1 * 80));
@@ -31,6 +34,18 @@
 
             var princess = new Princess(new Vector2(0 * 80, 1 * 80));
             Units.Add(princess);
+
+            //princess = new Princess(new Vector2(1 * 80, 1 * 80));
+            //Units.Add(princess);
+
+            //princess = new Princess(new Vector2(1 * 80, 6 * 80));
+            //Units.Add(princess);
+
+            //princess = new Princess(new Vector2(4 * 80, 1 * 80));
+            //Units.Add(princess);
+
+            //princess = new Princess(new Vector2(9 * 80, 1 * 80));
+            //Units.Add(princess);
         }
 
         public static void InitializeLevel(string level)
@@ -72,6 +87,30 @@
                         }
                     }
                     lineCount++;
+                }
+            }
+        }
+
+        public static void CleanInactiveProjectiles()
+        {
+            var temp = new List<IProjectile>(Engine.Projectiles);
+            for (int i = 0; i < temp.Count; i++)
+            {
+                if (!temp[i].IsActive)
+                {
+                    Engine.Projectiles.Remove(temp[i]);
+                }
+            }
+        }
+
+        public static void CleanInactiveUnits()
+        {
+            var temp = new List<IUnit>(Engine.Units);
+            for (int i = 0; i < temp.Count; i++)
+            {
+                if (!temp[i].IsActive)
+                {
+                    Engine.Units.Remove(temp[i]);
                 }
             }
         }

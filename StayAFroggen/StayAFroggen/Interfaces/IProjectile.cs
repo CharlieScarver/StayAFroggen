@@ -1,7 +1,13 @@
 ﻿namespace StayAFroggen.Interfaces
 {
-    public interface IProjectile : IGameObject, IUpdateable, IMoveable
-    {
+    using Structures;
 
+    public interface IProjectile : IGameObject, IUpdateable
+    {
+        VelocityXY Velocity { get; }
+
+        IPrincess Target { get; }
+
+        int Damage { get; }
     }
 }

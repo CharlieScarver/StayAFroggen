@@ -5,8 +5,7 @@
     using Microsoft.Xna.Framework;
     using Microsoft.Xna.Framework.Graphics;
     using Microsoft.Xna.Framework.Input;
-    using StayAFroggen.GameObjects;
-    using StayAFroggen.TextureLoading;
+    using TextureLoading;
 
     /// <summary>
     /// This is the main type for your game.
@@ -15,7 +14,8 @@
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        private TestObject testObj;
+        private Timer.Timer cleanTimer;
+        private Timer.Timer spawnTimer;
 
         public Game1()
         {
@@ -38,11 +38,12 @@
             this.graphics.PreferredBackBufferWidth = 1280;
             this.graphics.PreferredBackBufferHeight = 720;
             this.graphics.ApplyChanges();
-
-            testObj = new TestObject(new Vector2(150, 150));
-
+           
             Engine.InitializeGameObjects();
             Engine.InitializeLevel("1");
+
+            cleanTimer = new Timer.Timer();
+            spawnTimer = new Timer.Timer();
         }
 
         /// <summary>
@@ -76,15 +77,53 @@
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))// || !player.IsActive)
                 Exit();
 
+            if (this.cleanTimer.CheckIfReady(gameTime))
+            {
+                Engine.CleanInactiveUnits();
+                Engine.CleanInactiveProjectiles();
+                this.cleanTimer.SetTimer(gameTime, 0.5);
+            }
+
+            if (this.spawnTimer.CheckIfReady(gameTime))
+            {
+                Engine.InitializeGameObjects(); //kek
+                this.spawnTimer.SetTimer(gameTime, 2);
+            }
+
             foreach (IUnit unit in Engine.Units)
             {
-                unit.Update(gameTime);
+                if (unit.IsActive)
+                {
+                    unit.Update(gameTime);
+                }
+                else
+                {
+                    unit.Nullify();
+                }
             }
 
             foreach (ITower tower in Engine.Towers)
             {
-                tower.Update(gameTime);
-                //tower.DrawBb(this.spriteBatch, Color.Bisque);
+                if (tower.IsActive)
+                {
+                    tower.Update(gameTime);
+                }
+                else
+                {
+                    tower.Nullify();
+                }
+            }
+
+            foreach (IProjectile projectile in Engine.Projectiles)
+            {
+                if (projectile.IsActive)
+                {
+                    projectile.Update(gameTime);
+                }
+                else
+                {
+                    projectile.Nullify();
+                }
             }
 
             base.Update(gameTime);
@@ -112,19 +151,32 @@
             {
                 tile.Draw(this.spriteBatch);
             }
-            
-            //testObj.Draw(this.spriteBatch);
 
             foreach (IUnit unit in Engine.Units)
             {
-                unit.Draw(this.spriteBatch);
-                //unit.DrawBb(this.spriteBatch, Color.Bisque);
+                if (unit.IsActive)
+                {
+                    unit.Draw(this.spriteBatch);
+                    //unit.DrawBb(this.spriteBatch, Color.Bisque);
+                }
+            }
+
+            foreach (IProjectile projectile in Engine.Projectiles)
+            {
+                if (projectile.IsActive)
+                {
+                    projectile.Draw(this.spriteBatch);
+                    //projectile.DrawBb(this.spriteBatch, Color.Bisque);
+                }
             }
 
             foreach (ITower tower in Engine.Towers)
             {
-                tower.Draw(this.spriteBatch);
-                //tower.DrawBb(this.spriteBatch, Color.Bisque);
+                if (tower.IsActive)
+                {
+                    tower.Draw(this.spriteBatch);
+                    //tower.DrawBb(this.spriteBatch, Color.Bisque);
+                }
             }
 
             this.spriteBatch.End();

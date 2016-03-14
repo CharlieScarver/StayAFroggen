@@ -6,6 +6,6 @@
 
         int Damage { get; }
 
-        void Attack(IUnit unit);
+        void Attack(IPrincess unit);
     }
 }

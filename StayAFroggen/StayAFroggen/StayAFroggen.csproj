@@ -71,6 +71,7 @@
     <Compile Include="Interfaces\IUpdatable.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Structures\VelocityXY.cs" />
     <Compile Include="TextureLoading\TextureLoader.cs" />
     <Compile Include="Timer\Timer.cs" />
   </ItemGroup>
